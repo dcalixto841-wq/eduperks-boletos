@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eduperks · Stand</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1E1B4B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{ --indigo:#1E1B4B; --indigo-2:#3B358F; --amarillo:#F5B700; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:linear-gradient(160deg,var(--indigo),var(--indigo-2));color:#fff;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;min-height:100vh;overflow:hidden}
+  .marca{font-weight:800;letter-spacing:.32em;font-size:14px;opacity:.85}
+  h1{font-size:clamp(26px,7vw,44px);margin:10px 0 4px;line-height:1.1;font-weight:800}
+  .sub{opacity:.85;margin:0 0 22px;font-size:clamp(15px,4vw,20px)}
+  .qr-caja{background:#fff;padding:18px;border-radius:24px;box-shadow:0 18px 40px rgba(0,0,0,.3);position:relative}
+  #qr img,#qr canvas{display:block}
+  .barra{height:8px;border-radius:99px;background:rgba(255,255,255,.2);width:min(80vw,420px);margin:20px auto 8px;overflow:hidden}
+  .barra i{display:block;height:100%;background:var(--amarillo);width:100%;transform-origin:left}
+  .info{font-size:14px;opacity:.85}
+  .contador{margin-top:18px;background:rgba(245,183,0,.15);border:1px solid rgba(245,183,0,.5);padding:8px 16px;border-radius:99px;font-weight:700}
+  .contador b{color:var(--amarillo)}
+  .pasos{display:flex;gap:14px;justify-content:center;margin-top:20px;font-size:13px;opacity:.9;flex-wrap:wrap}
+  .pasos span{background:rgba(255,255,255,.1);padding:6px 12px;border-radius:99px}
+  .oculto{display:none!important}
+  .agotado{font-size:28px;font-weight:800;padding:40px 20px}
+  form.clave{background:#fff;color:var(--indigo);padding:22px;border-radius:20px;max-width:340px;width:100%}
+  form.clave input{width:100%;font:inherit;font-size:16px;padding:12px;border:1.5px solid #ddd;border-radius:12px;margin:10px 0}
+  form.clave button{width:100%;font:inherit;font-weight:800;padding:12px;border:0;border-radius:12px;background:var(--amarillo);color:var(--indigo);font-size:16px}
+  .estado{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;background:rgba(0,0,0,.4);padding:4px 12px;border-radius:99px}
+  .fs{position:fixed;top:12px;right:12px;background:rgba(255,255,255,.15);border:0;color:#fff;font-size:18px;width:40px;height:40px;border-radius:12px;cursor:pointer}
+</style>
+</head>
+<body>
+<button class="fs" id="fs" title="Pantalla completa">⛶</button>
+
+<form class="clave oculto" id="form-clave">
+  <h2 style="margin:0">Clave del stand</h2>
+  <input id="clave" placeholder="Escribe tu CLAVE_STAND" autocomplete="off">
+  <button>Entrar</button>
+</form>
+
+<div id="pantalla" class="oculto">
+  <div class="marca">EDUPERKS</div>
+  <h1>🎬 ¡Gana un boleto de cine!</h1>
+  <p class="sub">Escanea con la cámara de tu celular</p>
+  <div class="qr-caja"><div id="qr"></div></div>
+  <div class="barra"><i id="barra"></i></div>
+  <div class="info" id="info">El código se renueva cada pocos segundos</div>
+  <div class="contador" id="contador"><b id="disp">—</b> boletos disponibles</div>
+  <div class="pasos"><span>1. Escanea</span><span>2. Regístrate</span><span>3. Recibe tu boleto</span></div>
+</div>
+
+<div id="agotado" class="agotado oculto">🎟️ ¡Boletos agotados!<br><span style="font-size:18px;font-weight:600;opacity:.85">Gracias por visitarnos</span></div>
+
+<div class="estado oculto" id="estado"></div>
+
+<script>
+(function(){
+  const C = window.EDUPERKS;
+  const DEMO = !C.API_URL;
+  const $ = id => document.getElementById(id);
+  const BASE = new URL('./', location.href).href;
+  const LS = (()=>{ try { return window.localStorage; } catch(e){ return null; } })();
+  let qr, clave, prog;
+
+  // clave desde #clave=XXXX o guardada
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('clave')){ clave = h.get('clave'); try { LS && LS.setItem('eduperks_clave', clave); } catch(e){} history.replaceState(null,'',location.pathname); }
+  else { try { clave = LS && LS.getItem('eduperks_clave'); } catch(e){} }
+
+  function estado(t){ const e = $('estado'); e.textContent = t; e.classList.toggle('oculto', !t); }
+
+  if (!clave && !DEMO){ $('form-clave').classList.remove('oculto'); }
+  else arrancar();
+
+  $('form-clave').addEventListener('submit', ev => {
+    ev.preventDefault(); clave = $('clave').value.trim(); if (!clave) return;
+    try { LS && LS.setItem('eduperks_clave', clave); } catch(e){}
+    $('form-clave').classList.add('oculto'); arrancar();
+  });
+
+  function arrancar(){
+    $('pantalla').classList.remove('oculto');
+    const lado = Math.min(window.innerWidth * 0.72, window.innerHeight * 0.45, 460);
+    qr = new QRCode($('qr'), { width: lado, height: lado, colorDark:'#1E1B4B', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+    mantenerEncendido();
+    ciclo();
+  }
+
+  async function obtenerToken(){
+    if (DEMO){
+      const slot = Math.floor(Date.now() / 45000);
+      return { ok:true, token:'demo' + slot, expiraEn: (slot + 1) * 45000 - Date.now(), disponibles: 200 };
+    }
+    const u = new URL(C.API_URL); u.searchParams.set('accion','token'); u.searchParams.set('clave', clave);
+    return (await fetch(u.toString())).json();
+  }
+
+  async function ciclo(){
+    try {
+      const r = await obtenerToken();
+      if (!r.ok){
+        if (r.codigo === 'clave'){ try { LS && LS.removeItem('eduperks_clave'); } catch(e){} $('pantalla').classList.add('oculto'); $('form-clave').classList.remove('oculto'); estado('Clave incorrecta'); return; }
+        throw new Error(r.codigo);
+      }
+      estado(DEMO ? 'MODO DEMO' : '');
+      $('disp').textContent = r.disponibles;
+      if (r.disponibles === 0){ $('pantalla').classList.add('oculto'); $('agotado').classList.remove('oculto'); setTimeout(ciclo, 60000); return; }
+      $('pantalla').classList.remove('oculto'); $('agotado').classList.add('oculto');
+      qr.clear(); qr.makeCode(BASE + '?t=' + encodeURIComponent(r.token));
+      animarBarra(r.expiraEn);
+      setTimeout(ciclo, Math.max(r.expiraEn, 3000) + 400);
+    } catch(e){
+      estado('Sin conexión · reintentando…');
+      setTimeout(ciclo, 5000);
+    }
+  }
+
+  function animarBarra(ms){
+    cancelAnimationFrame(prog);
+    const fin = Date.now() + ms, total = ms, b = $('barra');
+    const paso = () => { const resta = Math.max(0, fin - Date.now()); b.style.transform = 'scaleX(' + (resta / total) + ')'; if (resta > 0) prog = requestAnimationFrame(paso); };
+    paso();
+  }
+
+  // mantener la pantalla encendida
+  let wake;
+  async function mantenerEncendido(){
+    try { if ('wakeLock' in navigator){ wake = await navigator.wakeLock.request('screen'); } } catch(e){}
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible'){ mantenerEncendido(); } });
+
+  $('fs').addEventListener('click', () => {
+    const el = document.documentElement;
+    (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eduperks · Boleto de cine</title>
+<meta name="theme-color" content="#1E1B4B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+  :root{
+    --indigo:#1E1B4B; --indigo-2:#312E81; --amarillo:#F5B700; --amarillo-claro:#FFF4D6;
+    --texto:#1F2340; --suave:#6B7090; --linea:#E3E5F0; --fondo:#F4F5FB; --error:#D93A3A; --ok:#1F9D63;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--fondo);color:var(--texto);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .hero{background:linear-gradient(160deg,var(--indigo),var(--indigo-2));color:#fff;padding:28px 20px 72px;text-align:center;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(245,183,0,.14);right:-90px;top:-110px}
+  .marca{font-weight:800;letter-spacing:.32em;font-size:13px;opacity:.85}
+  .hero h1{margin:10px 0 6px;font-size:28px;line-height:1.15;font-weight:800}
+  .hero p{margin:0;opacity:.85;font-size:15px}
+  main{max-width:520px;margin:-48px auto 32px;padding:0 16px;position:relative;z-index:1}
+  .card{background:#fff;border-radius:20px;box-shadow:0 12px 32px rgba(30,27,75,.12);padding:22px 20px}
+  .oculto{display:none!important}
+  label{display:block;font-weight:700;font-size:14px;margin:16px 0 6px}
+  label .ayuda{font-weight:400;color:var(--suave);font-size:12px}
+  input,select{width:100%;font:inherit;font-size:16px;padding:13px 14px;border:1.5px solid var(--linea);border-radius:12px;background:#fff;color:var(--texto);appearance:none;-webkit-appearance:none}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231E1B4B' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+  input:focus,select:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(49,46,129,.15)}
+  .campo.invalido input,.campo.invalido select{border-color:var(--error)}
+  .msg-error{color:var(--error);font-size:12px;margin-top:5px;display:none}
+  .campo.invalido .msg-error{display:block}
+  .check{display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:13px;color:var(--suave)}
+  .check input{width:20px;height:20px;flex:none;margin:1px 0 0;appearance:auto;-webkit-appearance:checkbox}
+  .check a{color:var(--indigo-2)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:22px;padding:16px;border:0;border-radius:14px;font:inherit;font-size:17px;font-weight:800;cursor:pointer;text-decoration:none;transition:transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn-principal{background:var(--amarillo);color:var(--indigo);box-shadow:0 6px 16px rgba(245,183,0,.35)}
+  .btn-secundario{background:#fff;color:var(--indigo);border:1.5px solid var(--linea);margin-top:12px}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .timer{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--suave);margin-bottom:4px}
+  .timer b{color:var(--indigo)}
+  .aviso{text-align:center;padding:12px 4px}
+  .aviso .icono{font-size:46px;line-height:1}
+  .aviso h2{font-size:21px;margin:12px 0 8px}
+  .aviso p{color:var(--suave);margin:0;font-size:15px;line-height:1.5}
+  .boleto-img{width:100%;border-radius:16px;display:block;box-shadow:0 8px 24px rgba(30,27,75,.18)}
+  .estado-correo{font-size:14px;text-align:center;color:var(--indigo);background:var(--amarillo-claro);border-radius:12px;padding:12px;margin-top:16px;line-height:1.5}
+  .estado-correo.ok{color:var(--ok)}
+  .tip{font-size:12px;text-align:center;color:var(--suave);margin-top:10px}
+  .spinner{width:36px;height:36px;border:4px solid var(--linea);border-top-color:var(--indigo);border-radius:50%;animation:gira 1s linear infinite;margin:10px auto}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  .demo{position:fixed;top:10px;left:10px;background:#000;color:#fff;font-size:11px;padding:4px 10px;border-radius:99px;opacity:.7;z-index:9}
+  footer{text-align:center;font-size:12px;color:var(--suave);padding-bottom:24px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="marca">EDUPERKS</div>
+  <h1>🎬 Tu boleto de cine te espera</h1>
+  <p>Regístrate y redime tu boleto al instante</p>
+</header>
+
+<main>
+  <!-- Cargando -->
+  <section id="s-cargando" class="card aviso">
+    <div class="spinner"></div>
+    <p>Validando tu código…</p>
+  </section>
+
+  <!-- Formulario -->
+  <section id="s-form" class="card oculto">
+    <div class="timer">⏱️ Tienes <b id="t-restante">10:00</b> para completar tu registro</div>
+    <form id="form" novalidate>
+      <div class="campo">
+        <label for="razon">Razón social</label>
+        <input id="razon" name="razon" autocomplete="organization" maxlength="150" required>
+        <div class="msg-error">Escribe la razón social</div>
+      </div>
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" name="nombre" autocomplete="name" maxlength="120" required>
+        <div class="msg-error">Escribe tu nombre completo</div>
+      </div>
+      <div class="campo">
+        <label for="estado">Estado de la República</label>
+        <select id="estado" name="estado" required><option value="">Selecciona tu estado</option></select>
+        <div class="msg-error">Selecciona tu estado</div>
+      </div>
+      <div class="campo">
+        <label for="docentes">Total de docentes</label>
+        <input id="docentes" name="docentes" type="number" inputmode="numeric" min="1" step="1" required>
+        <div class="msg-error">Escribe solo el número, por ejemplo: 25</div>
+      </div>
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" name="correo" type="email" inputmode="email" autocomplete="email" maxlength="120" required>
+        <div class="msg-error">Escribe un correo válido, por ejemplo: nombre@escuela.com</div>
+      </div>
+      <div class="campo">
+        <label for="celular">Celular <span class="ayuda">· 10 dígitos</span></label>
+        <input id="celular" name="celular" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" required>
+        <div class="msg-error">Escribe tu celular a 10 dígitos, sin espacios</div>
+      </div>
+      <div class="campo">
+        <label class="check"><input type="checkbox" id="privacidad" required>
+          <span>Acepto el <a id="link-aviso" href="#" target="_blank" rel="noopener">aviso de privacidad</a> y recibir información de Eduperks.</span></label>
+        <div class="msg-error">Debes aceptar el aviso de privacidad</div>
+      </div>
+      <button class="btn btn-principal" id="btn-redimir" type="submit">🎟️ Redimir mi boleto</button>
+    </form>
+  </section>
+
+  <!-- Boleto -->
+  <section id="s-boleto" class="card oculto">
+    <img id="boleto-img" class="boleto-img" alt="Tu boleto de cine">
+    <p class="tip">También puedes mantener presionada la imagen para guardarla.</p>
+    <a class="btn btn-principal" id="btn-descargar" download>⬇️ Descargar boleto</a>
+    <button class="btn btn-secundario oculto" id="btn-compartir" type="button">📤 Guardar o compartir</button>
+    <p class="estado-correo" id="estado-correo"></p>
+  </section>
+
+  <!-- Avisos -->
+  <section id="s-aviso" class="card aviso oculto">
+    <div class="icono" id="a-icono"></div>
+    <h2 id="a-titulo"></h2>
+    <p id="a-texto"></p>
+    <button class="btn btn-secundario oculto" id="a-boton" type="button"></button>
+  </section>
+</main>
+<footer>Eduperks · Un boleto por persona</footer>
+
+<script>
+(function(){
+  const C = window.EDUPERKS;
+  const DEMO = !C.API_URL;
+  const LS_KEY = 'eduperks_boleto';
+  const SS_KEY = 'eduperks_sesion';
+  const $ = id => document.getElementById(id);
+  const ESTADOS = ['Aguascalientes','Baja California','Baja California Sur','Campeche','Chiapas','Chihuahua','Ciudad de México','Coahuila','Colima','Durango','Estado de México','Guanajuato','Guerrero','Hidalgo','Jalisco','Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla','Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora','Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatán','Zacatecas'];
+
+  ESTADOS.forEach(e => { const o = document.createElement('option'); o.value = o.textContent = e; $('estado').appendChild(o); });
+  $('link-aviso').href = C.AVISO_PRIVACIDAD_URL || '#';
+  if (DEMO) { const d = document.createElement('div'); d.className = 'demo'; d.textContent = 'MODO DEMO'; document.body.appendChild(d); }
+
+  // ---------- almacenamiento seguro ----------
+  const store = {
+    get(s, k){ try { return JSON.parse(s.getItem(k)); } catch(e){ return null; } },
+    set(s, k, v){ try { s.setItem(k, JSON.stringify(v)); } catch(e){} },
+    del(s, k){ try { s.removeItem(k); } catch(e){} }
+  };
+  const LS = (()=>{ try { return window.localStorage; } catch(e){ return null; } })();
+  const SS = (()=>{ try { return window.sessionStorage; } catch(e){ return null; } })();
+  const lsGet = k => LS ? store.get(LS,k) : null, lsSet = (k,v) => LS && store.set(LS,k,v);
+  const ssGet = k => SS ? store.get(SS,k) : null, ssSet = (k,v) => SS && store.set(SS,k,v), ssDel = k => SS && store.del(SS,k);
+
+  // ---------- pantallas ----------
+  function mostrar(id){ ['s-cargando','s-form','s-boleto','s-aviso'].forEach(s => $(s).classList.toggle('oculto', s !== id)); window.scrollTo(0,0); }
+  const AVISOS = {
+    sinqr:     ['📱','Escanea el código QR','Para redimir tu boleto escanea el código QR en el stand de Eduperks.'],
+    expirado:  ['⌛','Este código ya expiró','Vuelve a escanear el código QR que aparece en el stand de Eduperks.'],
+    invalido:  ['⚠️','Código no válido','Vuelve a escanear el código QR que aparece en el stand de Eduperks.'],
+    sesion:    ['⌛','Se acabó el tiempo','Por seguridad, vuelve a escanear el código QR en el stand para continuar.'],
+    duplicado: ['🙌','Ya redimiste tu boleto','Encontramos un registro con estos datos. La promoción es de un boleto por persona. Si crees que es un error, acércate al stand.'],
+    agotado:   ['🎟️','Boletos agotados','¡Gracias por visitarnos! Los boletos de cine ya se terminaron.'],
+    error:     ['📶','Algo salió mal','Revisa tu conexión a internet e inténtalo de nuevo.']
+  };
+  function aviso(codigo, reintentar){
+    const a = AVISOS[codigo] || AVISOS.error;
+    $('a-icono').textContent = a[0]; $('a-titulo').textContent = a[1]; $('a-texto').textContent = a[2];
+    const b = $('a-boton');
+    if (reintentar){ b.textContent = 'Intentar de nuevo'; b.onclick = reintentar; b.classList.remove('oculto'); }
+    else b.classList.add('oculto');
+    mostrar('s-aviso');
+  }
+
+  // ---------- API ----------
+  async function api(accion, datos, metodo){
+    if (DEMO) return demo(accion);
+    let r;
+    if (metodo === 'GET'){
+      const u = new URL(C.API_URL);
+      u.searchParams.set('accion', accion);
+      Object.keys(datos).forEach(k => u.searchParams.set(k, datos[k]));
+      r = await fetch(u.toString());
+    } else {
+      r = await fetch(C.API_URL, { method:'POST', body: JSON.stringify(Object.assign({accion}, datos)) });
+    }
+    return r.json();
+  }
+  function demo(accion){
+    return new Promise(res => setTimeout(() => {
+      if (accion === 'validar') res({ok:true, sesion:'demo', expira: Date.now() + 600000});
+      else res({ok:true, folio:'EDU-' + String(Math.floor(Math.random()*200)+1).padStart(4,'0')});
+    }, 700));
+  }
+
+  // ---------- temporizador ----------
+  let timer;
+  function iniciarTimer(expira){
+    clearInterval(timer);
+    const tick = () => {
+      const ms = expira - Date.now();
+      if (ms <= 0){ clearInterval(timer); ssDel(SS_KEY); aviso('sesion'); return; }
+      const m = Math.floor(ms/60000), s = Math.floor(ms%60000/1000);
+      $('t-restante').textContent = m + ':' + String(s).padStart(2,'0');
+    };
+    tick(); timer = setInterval(tick, 1000);
+  }
+
+  // ---------- inicio ----------
+  async function iniciar(){
+    mostrar('s-cargando');
+    const guardado = lsGet(LS_KEY);
+    if (guardado && guardado.folio){ mostrarBoleto(guardado, true); return; }
+
+    let ses = ssGet(SS_KEY);
+    if (!ses || ses.expira < Date.now()){
+      const t = new URLSearchParams(location.search).get('t');
+      if (!t && !DEMO){ aviso('sinqr'); return; }
+      try {
+        const r = await api('validar', {t: t || 'demo'}, 'GET');
+        if (!r.ok){ aviso(r.codigo); return; }
+        ses = {sesion: r.sesion, expira: r.expira};
+        ssSet(SS_KEY, ses);
+      } catch(e){ aviso('error', iniciar); return; }
+    }
+    history.replaceState(null, '', location.pathname);
+    iniciarTimer(ses.expira);
+    mostrar('s-form');
+  }
+
+  // ---------- validación ----------
+  const reglas = {
+    razon:    v => v.trim().length >= 2,
+    nombre:   v => v.trim().split(/\s+/).length >= 2,
+    estado:   v => !!v,
+    docentes: v => /^\d+$/.test(v) && parseInt(v,10) > 0,
+    correo:   v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
+    celular:  v => /^\d{10}$/.test(v)
+  };
+  $('celular').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,10); });
+  Object.keys(reglas).forEach(k => $(k).addEventListener('input', () => $(k).closest('.campo').classList.remove('invalido')));
+  $('privacidad').addEventListener('change', () => $('privacidad').closest('.campo').classList.remove('invalido'));
+
+  function validar(){
+    let primero = null;
+    Object.keys(reglas).forEach(k => {
+      const ok = reglas[k]($(k).value);
+      $(k).closest('.campo').classList.toggle('invalido', !ok);
+      if (!ok && !primero) primero = $(k);
+    });
+    const priv = $('privacidad').checked;
+    $('privacidad').closest('.campo').classList.toggle('invalido', !priv);
+    if (!priv && !primero) primero = $('privacidad');
+    if (primero){ primero.focus(); return false; }
+    return true;
+  }
+
+  // ---------- canje ----------
+  $('form').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    if (!validar()) return;
+    const ses = ssGet(SS_KEY);
+    if (!ses || ses.expira < Date.now()){ aviso('sesion'); return; }
+    const btn = $('btn-redimir');
+    btn.disabled = true; btn.textContent = 'Redimiendo…';
+    const datos = {
+      sesion: ses.sesion,
+      razon: $('razon').value.trim(), nombre: $('nombre').value.trim(), estado: $('estado').value,
+      docentes: $('docentes').value, correo: $('correo').value.trim().toLowerCase(), celular: $('celular').value
+    };
+    try {
+      const r = await api('redimir', datos);
+      if (!r.ok){
+        if (r.codigo === 'datos'){ btn.disabled = false; btn.textContent = '🎟️ Redimir mi boleto'; validar(); return; }
+        clearInterval(timer); ssDel(SS_KEY); aviso(r.codigo); return;
+      }
+      clearInterval(timer); ssDel(SS_KEY);
+      const boleto = { folio: r.folio, nombre: datos.nombre, razon: datos.razon, correo: datos.correo, fecha: Date.now() };
+      lsSet(LS_KEY, boleto);
+      await mostrarBoleto(boleto, false);
+    } catch(e){
+      btn.disabled = false; btn.textContent = '🎟️ Redimir mi boleto';
+      alert('No pudimos conectar. Revisa tu señal e inténtalo de nuevo.');
+    }
+  });
+
+  // ---------- boleto ----------
+  async function mostrarBoleto(b, repetido){
+    const png = await dibujarBoleto(b);
+    $('boleto-img').src = png;
+    const a = $('btn-descargar'); a.href = png; a.download = 'boleto-' + b.folio + '.png';
+    const el = $('estado-correo'); el.className = 'estado-correo';
+    el.innerHTML = repetido
+      ? 'Ya redimiste tu boleto desde este celular.<br><b>Descárgalo o tómale captura</b> para tenerlo a la mano.'
+      : '⚠️ <b>Importante:</b> descarga tu boleto o tómale captura de pantalla.<br>No se envía por correo.';
+    prepararCompartir(png, b.folio);
+    mostrar('s-boleto');
+    return png;
+  }
+
+  async function prepararCompartir(png, folio){
+    const btn = $('btn-compartir');
+    try {
+      const blob = await (await fetch(png)).blob();
+      const file = new File([blob], 'boleto-' + folio + '.png', {type:'image/png'});
+      if (navigator.canShare && navigator.canShare({files:[file]})){
+        btn.classList.remove('oculto');
+        btn.onclick = () => navigator.share({files:[file], title:'Mi boleto de cine Eduperks'}).catch(()=>{});
+      }
+    } catch(e){}
+  }
+
+  function cargarImagen(src){
+    return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  }
+
+  async function dibujarBoleto(b){
+    try { await document.fonts.load('800 80px "Plus Jakarta Sans"'); await document.fonts.load('600 40px "Plus Jakarta Sans"'); } catch(e){}
+    const F = '"Plus Jakarta Sans", system-ui, sans-serif';
+    const cfg = C.BOLETO || {};
+    const cv = document.createElement('canvas');
+    const ctx = cv.getContext('2d');
+
+    if (cfg.fondo){
+      try {
+        const img = await cargarImagen(cfg.fondo);
+        cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+        ctx.drawImage(img, 0, 0);
+        texto(ctx, b.folio, cfg.folio, F);
+        if (cfg.nombre) texto(ctx, b.nombre, cfg.nombre, F);
+        return cv.toDataURL('image/png');
+      } catch(e){ /* si falla la imagen, usa el diseño básico */ }
+    }
+
+    // ----- Diseño básico Eduperks (1080 × 1500) -----
+    const W = 1080, H = 1500; cv.width = W; cv.height = H;
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, '#1E1B4B'); g.addColorStop(1, '#3B358F');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(245,183,0,.13)'; circulo(ctx, 960, 90, 230); circulo(ctx, 80, 1440, 180);
+
+    ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+    ctx.font = '800 38px ' + F; espaciado(ctx, 'EDUPERKS', W/2, 140, 14);
+    ctx.font = '800 92px ' + F; ctx.fillText('Boleto de cine', W/2, 262);
+
+    // tarjeta
+    const x = 90, y = 340, w = 900, h = 1010, corte = 900;
+    ctx.fillStyle = '#fff'; rrect(ctx, x, y, w, h, 44); ctx.fill();
+    ctx.fillStyle = '#2A2670'; circulo(ctx, x, corte, 44); circulo(ctx, x + w, corte, 44);
+    ctx.strokeStyle = '#D6D8E8'; ctx.lineWidth = 4; ctx.setLineDash([18, 14]);
+    ctx.beginPath(); ctx.moveTo(x + 64, corte); ctx.lineTo(x + w - 64, corte); ctx.stroke(); ctx.setLineDash([]);
+
+    // tira de película
+    ctx.fillStyle = '#1E1B4B'; rrect(ctx, 270, 400, 540, 120, 16); ctx.fill();
+    ctx.fillStyle = '#fff';
+    for (let i = 0; i < 9; i++){ rrect(ctx, 292 + i*58, 412, 30, 18, 4); ctx.fill(); rrect(ctx, 292 + i*58, 490, 30, 18, 4); ctx.fill(); }
+    ctx.fillStyle = '#F5B700'; ctx.font = '800 46px ' + F; ctx.fillText('ADMITE 1', W/2, 478);
+
+    ctx.fillStyle = '#6B7090'; ctx.font = '600 38px ' + F; ctx.fillText('Este boleto es para', W/2, 610);
+    ctx.fillStyle = '#1E1B4B'; ajustar(ctx, b.nombre || '', W/2, 690, 780, 60, 800, F);
+    if (b.razon){ ctx.fillStyle = '#6B7090'; ajustar(ctx, b.razon, W/2, 755, 780, 36, 600, F); }
+    ctx.fillStyle = '#6B7090'; ctx.font = '600 30px ' + F;
+    ctx.fillText(new Date(b.fecha || Date.now()).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}), W/2, 820);
+
+    ctx.fillStyle = '#8A6D00'; ctx.font = '800 32px ' + F; espaciado(ctx, 'FOLIO', W/2, 1000, 10);
+    ctx.fillStyle = '#F5B700'; rrect(ctx, 190, 1030, 700, 170, 28); ctx.fill();
+    ctx.fillStyle = '#1E1B4B'; ajustar(ctx, b.folio, W/2, 1148, 640, 100, 800, F);
+
+    ctx.fillStyle = '#6B7090'; ctx.font = '400 27px ' + F;
+    parrafo(ctx, C.TERMINOS || '', W/2, 1262, 760, 36);
+
+    ctx.fillStyle = '#fff'; ctx.font = '600 32px ' + F; ctx.fillText('Un boleto por persona · eduperks', W/2, 1432);
+    return cv.toDataURL('image/png');
+  }
+
+  // ---------- utilidades de dibujo ----------
+  function texto(ctx, t, c, F){
+    if (!c) return;
+    ctx.fillStyle = c.color || '#000'; ctx.textAlign = c.alinear || 'center'; ctx.textBaseline = 'middle';
+    ctx.font = (c.peso || 700) + ' ' + (c.tamano || 64) + 'px ' + F;
+    ctx.fillText(t, c.x, c.y); ctx.textBaseline = 'alphabetic';
+  }
+  function rrect(ctx, x, y, w, h, r){
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function circulo(ctx, x, y, r){ ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill(); }
+  function ajustar(ctx, t, x, y, max, tam, peso, F){
+    let s = tam; do { ctx.font = peso + ' ' + s + 'px ' + F; s -= 2; } while (ctx.measureText(t).width > max && s > 20);
+    ctx.fillText(t, x, y);
+  }
+  function espaciado(ctx, t, x, y, esp){
+    const total = ctx.measureText(t).width + esp * (t.length - 1);
+    let cx = x - total / 2; const al = ctx.textAlign; ctx.textAlign = 'left';
+    for (const ch of t){ ctx.fillText(ch, cx, y); cx += ctx.measureText(ch).width + esp; }
+    ctx.textAlign = al;
+  }
+  function parrafo(ctx, t, x, y, max, lh){
+    const palabras = t.split(' '); let linea = '', yy = y;
+    palabras.forEach(p => { const prueba = linea ? linea + ' ' + p : p;
+      if (ctx.measureText(prueba).width > max && linea){ ctx.fillText(linea, x, yy); linea = p; yy += lh; } else linea = prueba; });
+    if (linea) ctx.fillText(linea, x, yy);
+  }
+
+  iniciar();
+})();
+</script>
+</body>
+</html>
