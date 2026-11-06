@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Eduperks · Boleto de cine</title>
+<title>Eduperks · Cupón 2x1 de cine</title>
 <meta name="theme-color" content="#1E1B4B">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,14 +54,26 @@
   .spinner{width:36px;height:36px;border:4px solid var(--linea);border-top-color:var(--indigo);border-radius:50%;animation:gira 1s linear infinite;margin:10px auto}
   @keyframes gira{to{transform:rotate(360deg)}}
   .demo{position:fixed;top:10px;left:10px;background:#000;color:#fff;font-size:11px;padding:4px 10px;border-radius:99px;opacity:.7;z-index:9}
+  .legal{max-width:520px;margin:0 auto 20px;padding:0 16px}
+  .legal details{background:#fff;border:1px solid var(--linea);border-radius:14px;margin-top:10px;overflow:hidden}
+  .legal summary{cursor:pointer;padding:14px 16px;font-weight:700;font-size:14px;color:var(--indigo);list-style:none;display:flex;justify-content:space-between;align-items:center}
+  .legal summary::-webkit-details-marker{display:none}
+  .legal summary::after{content:"+";font-size:20px;font-weight:600}
+  .legal details[open] summary::after{content:"–"}
+  .legal-txt{padding:0 16px 14px;font-size:13px;line-height:1.55;color:var(--texto)}
+  .legal-txt h3{font-size:13px;margin:12px 0 4px;color:var(--indigo)}
+  .legal-txt p{margin:0 0 6px}
+  .legal-txt ul,.legal-txt ol{margin:0 0 6px;padding-left:18px}
+  .legal-txt li{margin-bottom:4px}
+  .legal-txt .fecha{color:var(--suave);font-size:12px;margin-top:10px}
   footer{text-align:center;font-size:12px;color:var(--suave);padding-bottom:24px}
 </style>
 </head>
 <body>
 <header class="hero">
   <div class="marca">EDUPERKS</div>
-  <h1>🎬 Tu boleto de cine te espera</h1>
-  <p>Regístrate y redime tu boleto al instante</p>
+  <h1>🎬 Tu cupón 2x1 de cine te espera</h1>
+  <p>Sala tradicional 2D en Cinépolis · Regístrate y redímelo al instante</p>
 </header>
 
 <main>
@@ -107,18 +119,20 @@
       </div>
       <div class="campo">
         <label class="check"><input type="checkbox" id="privacidad" required>
-          <span>Acepto el <a id="link-aviso" href="#" target="_blank" rel="noopener">aviso de privacidad</a> y recibir información de Eduperks.</span></label>
-        <div class="msg-error">Debes aceptar el aviso de privacidad</div>
+          <span>He leído y acepto el <a href="#aviso-privacidad" data-abrir="aviso-privacidad">aviso de privacidad</a> y los <a href="#terminos" data-abrir="terminos">términos y condiciones</a>.</span></label>
+        <div class="msg-error">Debes aceptar el aviso de privacidad y los términos</div>
       </div>
-      <button class="btn btn-principal" id="btn-redimir" type="submit">🎟️ Redimir mi boleto</button>
+      <label class="check"><input type="checkbox" id="info">
+        <span>Acepto recibir información y promociones de Eduperks <span class="ayuda">(opcional)</span>.</span></label>
+      <button class="btn btn-principal" id="btn-redimir" type="submit">🎟️ Redimir mi cupón</button>
     </form>
   </section>
 
   <!-- Boleto -->
   <section id="s-boleto" class="card oculto">
-    <img id="boleto-img" class="boleto-img" alt="Tu boleto de cine">
+    <img id="boleto-img" class="boleto-img" alt="Tu cupón 2x1 de cine">
     <p class="tip">También puedes mantener presionada la imagen para guardarla.</p>
-    <a class="btn btn-principal" id="btn-descargar" download>⬇️ Descargar boleto</a>
+    <a class="btn btn-principal" id="btn-descargar" download>⬇️ Descargar cupón</a>
     <button class="btn btn-secundario oculto" id="btn-compartir" type="button">📤 Guardar o compartir</button>
     <p class="estado-correo" id="estado-correo"></p>
   </section>
@@ -131,7 +145,67 @@
     <button class="btn btn-secundario oculto" id="a-boton" type="button"></button>
   </section>
 </main>
-<footer>Eduperks · Un boleto por persona</footer>
+
+<!-- Términos y aviso de privacidad -->
+<section class="legal">
+  <details id="terminos">
+    <summary>Términos y condiciones</summary>
+    <div class="legal-txt">
+      <h3>Descripción</h3>
+      <p>Como cortesía de Eduperks por tu visita a nuestro stand, recibes un cupón digital 2x1 válido en salas tradicionales de Cinépolis en todo el país. Con este cupón pagas un boleto y recibes dos boletos para la misma función.</p>
+      <h3>Alcance</h3>
+      <ul>
+        <li>1 cupón digital 2x1 por persona.</li>
+        <li>Válido en salas tradicionales 2D de cualquier complejo Cinépolis del país, de lunes a domingo.</li>
+        <li>Vigencia: hasta el 12 de noviembre de 2026.</li>
+      </ul>
+      <h3>Exclusiones y consideraciones</h3>
+      <ul>
+        <li>Para canjear el cupón se debe pagar un boleto de sala tradicional al precio vigente; a cambio se reciben dos boletos individuales para la misma función.</li>
+        <li>El cupón es válido para una sola función y se canjea en las taquillas de Cinépolis o en la aplicación de Cinépolis, cuando esta opción esté disponible.</li>
+        <li>El canje está sujeto a la disponibilidad de lugares en la función elegida.</li>
+        <li>No es válido en salas VIP, 3D, 4DX, XD, Macro XE, IMAX, Cinema Park, Cinépolis Plus ni Sala Junior.</li>
+        <li>No es válido en preventa, reservaciones ni junto con otras promociones.</li>
+        <li>Las condiciones de canje están sujetas a las políticas vigentes de Cinépolis.</li>
+        <li>El cupón no es canjeable por dinero en efectivo, no es negociable y no está permitida su venta. Puedes utilizarlo o compartirlo con la persona que elijas.</li>
+        <li>Se prohíbe su falsificación. Si el cupón presenta tachaduras, enmendaduras, modificaciones o cualquier alteración, será inválido, sin responsabilidad para Cinépolis (Cinépolis de México, S.A. de C.V.).</li>
+        <li>No se reponen cupones vencidos, eliminados o extraviados. Descarga tu cupón o tómale captura de pantalla.</li>
+        <li>La información proporcionada es confidencial y se maneja conforme al Aviso de Privacidad.</li>
+      </ul>
+      <h3>Cómo usarlo</h3>
+      <ol>
+        <li>Descarga tu cupón o tómale captura de pantalla.</li>
+        <li>Preséntalo de forma digital o impresa en la taquilla del complejo Cinépolis de tu preferencia, o ingresa el código en la aplicación de Cinépolis.</li>
+        <li>Paga un boleto de sala tradicional al precio vigente y recibe dos boletos individuales para la función, sala y horario elegidos.</li>
+      </ol>
+    </div>
+  </details>
+  <details id="aviso-privacidad">
+    <summary>Aviso de privacidad</summary>
+    <div class="legal-txt">
+      <p><b>ERA SOCIAL, S.A. de C.V.</b>, con domicilio en Bosque de Alisos 13, Bosques de las Lomas, Cuajimalpa de Morelos, C.P. 05120, Ciudad de México, es responsable del tratamiento de los datos personales que nos proporcionas en este formulario, como parte de la promoción de cupones de cine de Eduperks.</p>
+      <h3>Datos que recabamos</h3>
+      <p>Razón social de tu institución, nombre completo, estado de la República, total de docentes, correo electrónico y número de celular. No recabamos datos personales sensibles.</p>
+      <h3>Finalidades necesarias</h3>
+      <ul>
+        <li>Registrar tu participación en la promoción.</li>
+        <li>Asignarte y validar tu cupón 2x1.</li>
+        <li>Evitar registros duplicados.</li>
+        <li>Atender aclaraciones relacionadas con tu cupón.</li>
+      </ul>
+      <h3>Finalidades adicionales</h3>
+      <p>Solo si lo autorizas marcando la casilla correspondiente: compartir tu nombre, razón social, correo y celular con Eduperks para que te envíe información sobre sus productos, servicios y promociones, y te contacte con fines comerciales. Si no la marcas, tus datos no se compartirán ni se usarán para estos fines, y esto no afecta la entrega de tu cupón.</p>
+      <h3>Transferencias</h3>
+      <p>Tus datos solo se comparten con Eduperks si lo autorizas en la casilla correspondiente, y en ningún otro caso con terceros, salvo los previstos por la ley. Cinépolis no recibe tus datos; solo se valida el folio del cupón al canjearlo.</p>
+      <h3>Tus derechos</h3>
+      <p>Puedes acceder, rectificar, cancelar u oponerte al tratamiento de tus datos (derechos ARCO), así como revocar tu consentimiento, enviando tu solicitud a <a href="mailto:contacto@erasocial.com">contacto@erasocial.com</a>.</p>
+      <h3>Conservación y cambios</h3>
+      <p>Conservaremos tus datos durante la promoción y el tiempo necesario para cumplir las finalidades autorizadas. Cualquier cambio a este aviso se publicará en esta misma página.</p>
+      <p class="fecha">Última actualización: noviembre de 2026.</p>
+    </div>
+  </details>
+</section>
+<footer>Eduperks · Un cupón por persona</footer>
 
 <script>
 (function(){
@@ -143,7 +217,9 @@
   const ESTADOS = ['Aguascalientes','Baja California','Baja California Sur','Campeche','Chiapas','Chihuahua','Ciudad de México','Coahuila','Colima','Durango','Estado de México','Guanajuato','Guerrero','Hidalgo','Jalisco','Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla','Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora','Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatán','Zacatecas'];
 
   ESTADOS.forEach(e => { const o = document.createElement('option'); o.value = o.textContent = e; $('estado').appendChild(o); });
-  $('link-aviso').href = C.AVISO_PRIVACIDAD_URL || '#';
+  document.querySelectorAll('[data-abrir]').forEach(a => a.addEventListener('click', ev => {
+    ev.preventDefault(); const d = $(a.dataset.abrir); d.open = true; d.scrollIntoView({behavior:'smooth', block:'start'});
+  }));
   if (DEMO) { const d = document.createElement('div'); d.className = 'demo'; d.textContent = 'MODO DEMO'; document.body.appendChild(d); }
 
   // ---------- almacenamiento seguro ----------
@@ -160,12 +236,12 @@
   // ---------- pantallas ----------
   function mostrar(id){ ['s-cargando','s-form','s-boleto','s-aviso'].forEach(s => $(s).classList.toggle('oculto', s !== id)); window.scrollTo(0,0); }
   const AVISOS = {
-    sinqr:     ['📱','Escanea el código QR','Para redimir tu boleto escanea el código QR en el stand de Eduperks.'],
+    sinqr:     ['📱','Escanea el código QR','Para redimir tu cupón escanea el código QR en el stand de Eduperks.'],
     expirado:  ['⌛','Este código ya expiró','Vuelve a escanear el código QR que aparece en el stand de Eduperks.'],
     invalido:  ['⚠️','Código no válido','Vuelve a escanear el código QR que aparece en el stand de Eduperks.'],
     sesion:    ['⌛','Se acabó el tiempo','Por seguridad, vuelve a escanear el código QR en el stand para continuar.'],
-    duplicado: ['🙌','Ya redimiste tu boleto','Encontramos un registro con estos datos. La promoción es de un boleto por persona. Si crees que es un error, acércate al stand.'],
-    agotado:   ['🎟️','Boletos agotados','¡Gracias por visitarnos! Los boletos de cine ya se terminaron.'],
+    duplicado: ['🙌','Ya redimiste tu cupón','Encontramos un registro con estos datos. La promoción es de un cupón por persona. Si crees que es un error, acércate al stand.'],
+    agotado:   ['🎟️','Cupones agotados','¡Gracias por visitarnos! Los cupones de cine ya se terminaron.'],
     error:     ['📶','Algo salió mal','Revisa tu conexión a internet e inténtalo de nuevo.']
   };
   function aviso(codigo, reintentar){
@@ -271,12 +347,12 @@
     const datos = {
       sesion: ses.sesion,
       razon: $('razon').value.trim(), nombre: $('nombre').value.trim(), estado: $('estado').value,
-      docentes: $('docentes').value, correo: $('correo').value.trim().toLowerCase(), celular: $('celular').value
+      docentes: $('docentes').value, info: $('info').checked, correo: $('correo').value.trim().toLowerCase(), celular: $('celular').value
     };
     try {
       const r = await api('redimir', datos);
       if (!r.ok){
-        if (r.codigo === 'datos'){ btn.disabled = false; btn.textContent = '🎟️ Redimir mi boleto'; validar(); return; }
+        if (r.codigo === 'datos'){ btn.disabled = false; btn.textContent = '🎟️ Redimir mi cupón'; validar(); return; }
         clearInterval(timer); ssDel(SS_KEY); aviso(r.codigo); return;
       }
       clearInterval(timer); ssDel(SS_KEY);
@@ -284,7 +360,7 @@
       lsSet(LS_KEY, boleto);
       await mostrarBoleto(boleto, false);
     } catch(e){
-      btn.disabled = false; btn.textContent = '🎟️ Redimir mi boleto';
+      btn.disabled = false; btn.textContent = '🎟️ Redimir mi cupón';
       alert('No pudimos conectar. Revisa tu señal e inténtalo de nuevo.');
     }
   });
@@ -296,8 +372,8 @@
     const a = $('btn-descargar'); a.href = png; a.download = 'boleto-' + b.folio + '.png';
     const el = $('estado-correo'); el.className = 'estado-correo';
     el.innerHTML = repetido
-      ? 'Ya redimiste tu boleto desde este celular.<br><b>Descárgalo o tómale captura</b> para tenerlo a la mano.'
-      : '⚠️ <b>Importante:</b> descarga tu boleto o tómale captura de pantalla.<br>No se envía por correo.';
+      ? 'Ya redimiste tu cupón desde este celular.<br><b>Descárgalo o tómale captura</b> para tenerlo a la mano.'
+      : '⚠️ <b>Importante:</b> descarga tu cupón o tómale captura de pantalla.<br>No se envía por correo. Válido hasta el ' + C.VIGENCIA + '.';
     prepararCompartir(png, b.folio);
     mostrar('s-boleto');
     return png;
@@ -310,7 +386,7 @@
       const file = new File([blob], 'boleto-' + folio + '.png', {type:'image/png'});
       if (navigator.canShare && navigator.canShare({files:[file]})){
         btn.classList.remove('oculto');
-        btn.onclick = () => navigator.share({files:[file], title:'Mi boleto de cine Eduperks'}).catch(()=>{});
+        btn.onclick = () => navigator.share({files:[file], title:'Mi cupón 2x1 de cine Eduperks'}).catch(()=>{});
       }
     } catch(e){}
   }
@@ -346,7 +422,7 @@
 
     ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
     ctx.font = '800 38px ' + F; espaciado(ctx, 'EDUPERKS', W/2, 140, 14);
-    ctx.font = '800 92px ' + F; ctx.fillText('Boleto de cine', W/2, 262);
+    ctx.font = '800 92px ' + F; ctx.fillText('Cupón de cine 2x1', W/2, 262);
 
     // tarjeta
     const x = 90, y = 340, w = 900, h = 1010, corte = 900;
@@ -359,22 +435,21 @@
     ctx.fillStyle = '#1E1B4B'; rrect(ctx, 270, 400, 540, 120, 16); ctx.fill();
     ctx.fillStyle = '#fff';
     for (let i = 0; i < 9; i++){ rrect(ctx, 292 + i*58, 412, 30, 18, 4); ctx.fill(); rrect(ctx, 292 + i*58, 490, 30, 18, 4); ctx.fill(); }
-    ctx.fillStyle = '#F5B700'; ctx.font = '800 46px ' + F; ctx.fillText('ADMITE 1', W/2, 478);
+    ctx.fillStyle = '#F5B700'; ctx.font = '800 46px ' + F; ctx.fillText('2x1 · SALA 2D', W/2, 478);
 
-    ctx.fillStyle = '#6B7090'; ctx.font = '600 38px ' + F; ctx.fillText('Este boleto es para', W/2, 610);
-    ctx.fillStyle = '#1E1B4B'; ajustar(ctx, b.nombre || '', W/2, 690, 780, 60, 800, F);
-    if (b.razon){ ctx.fillStyle = '#6B7090'; ajustar(ctx, b.razon, W/2, 755, 780, 36, 600, F); }
-    ctx.fillStyle = '#6B7090'; ctx.font = '600 30px ' + F;
-    ctx.fillText(new Date(b.fecha || Date.now()).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}), W/2, 820);
+    ctx.fillStyle = '#1E1B4B'; ajustar(ctx, 'Pagas 1 boleto y recibes 2', W/2, 625, 780, 60, 800, F);
+    ctx.fillStyle = '#6B7090'; ctx.font = '600 36px ' + F; ctx.fillText('Sala tradicional 2D · Cinépolis', W/2, 690);
+    ctx.fillStyle = '#FFF4D6'; rrect(ctx, 175, 738, 730, 82, 41); ctx.fill();
+    ctx.fillStyle = '#8A6D00'; ajustar(ctx, 'Válido hasta el ' + (C.VIGENCIA || ''), W/2, 792, 680, 34, 800, F);
 
-    ctx.fillStyle = '#8A6D00'; ctx.font = '800 32px ' + F; espaciado(ctx, 'FOLIO', W/2, 1000, 10);
-    ctx.fillStyle = '#F5B700'; rrect(ctx, 190, 1030, 700, 170, 28); ctx.fill();
-    ctx.fillStyle = '#1E1B4B'; ajustar(ctx, b.folio, W/2, 1148, 640, 100, 800, F);
+    ctx.fillStyle = '#8A6D00'; ctx.font = '800 32px ' + F; espaciado(ctx, 'FOLIO', W/2, 985, 10);
+    ctx.fillStyle = '#F5B700'; rrect(ctx, 190, 1012, 700, 160, 28); ctx.fill();
+    ctx.fillStyle = '#1E1B4B'; ajustar(ctx, b.folio, W/2, 1126, 640, 96, 800, F);
 
-    ctx.fillStyle = '#6B7090'; ctx.font = '400 27px ' + F;
-    parrafo(ctx, C.TERMINOS || '', W/2, 1262, 760, 36);
+    ctx.fillStyle = '#6B7090'; ctx.font = '400 24px ' + F;
+    parrafo(ctx, C.TERMINOS || '', W/2, 1222, 800, 31);
 
-    ctx.fillStyle = '#fff'; ctx.font = '600 32px ' + F; ctx.fillText('Un boleto por persona · eduperks', W/2, 1432);
+    ctx.fillStyle = '#fff'; ctx.font = '600 32px ' + F; ctx.fillText('Un cupón por persona · eduperks', W/2, 1432);
     return cv.toDataURL('image/png');
   }
 

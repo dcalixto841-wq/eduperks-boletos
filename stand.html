@@ -49,16 +49,16 @@
 
 <div id="pantalla" class="oculto">
   <div class="marca">EDUPERKS</div>
-  <h1>🎬 ¡Gana un boleto de cine!</h1>
-  <p class="sub">Escanea con la cámara de tu celular</p>
+  <h1>🎬 ¡Gana un cupón 2x1 de cine!</h1>
+  <p class="sub">Sala tradicional 2D en Cinépolis · Escanea con tu celular</p>
   <div class="qr-caja"><div id="qr"></div></div>
   <div class="barra"><i id="barra"></i></div>
   <div class="info" id="info">El código se renueva cada pocos segundos</div>
-  <div class="contador" id="contador"><b id="disp">—</b> boletos disponibles</div>
-  <div class="pasos"><span>1. Escanea</span><span>2. Regístrate</span><span>3. Recibe tu boleto</span></div>
+  <div class="contador" id="contador"><b id="disp">—</b> cupones disponibles</div>
+  <div class="pasos"><span>1. Escanea</span><span>2. Regístrate</span><span>3. Recibe tu cupón</span></div>
 </div>
 
-<div id="agotado" class="agotado oculto">🎟️ ¡Boletos agotados!<br><span style="font-size:18px;font-weight:600;opacity:.85">Gracias por visitarnos</span></div>
+<div id="agotado" class="agotado oculto">🎟️ ¡Cupones agotados!<br><span style="font-size:18px;font-weight:600;opacity:.85">Gracias por visitarnos</span></div>
 
 <div class="estado oculto" id="estado"></div>
 
@@ -68,6 +68,7 @@
   const DEMO = !C.API_URL;
   const $ = id => document.getElementById(id);
   const BASE = new URL('./', location.href).href;
+
   const LS = (()=>{ try { return window.localStorage; } catch(e){ return null; } })();
   let qr, clave, prog;
 

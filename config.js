@@ -7,8 +7,9 @@ window.EDUPERKS = {
   API_URL: 'https://script.google.com/macros/s/AKfycbyTEDIVNJ9E41A4FzBdKsT1yxCq2NMYK5YXqyDFKwaTo852mgew3OuZc5Pm9lCtv3tYGA/exec',
 
   CAMPANA: 'Eduperks',
-  TERMINOS: 'Válido por una entrada a función 2D. Sujeto a disponibilidad. No canjeable por efectivo.',
-  AVISO_PRIVACIDAD_URL: '#',   // ← liga a tu aviso de privacidad
+  VIGENCIA: '12 de noviembre de 2026',
+  // Texto corto que aparece en la imagen del cupón (los términos completos están en index.html)
+  TERMINOS: 'Válido por 1 cupón 2x1 en sala tradicional 2D de Cinépolis. Pagas un boleto y recibes dos. Vigencia: 12 de noviembre de 2026. No canjeable por efectivo. Consulta términos y condiciones.',
 
   // Diseño del boleto.
   // Mientras "fondo" esté vacío se usa el diseño básico de Eduperks.
