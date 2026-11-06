@@ -369,24 +369,30 @@
   async function mostrarBoleto(b, repetido){
     const png = await dibujarBoleto(b);
     $('boleto-img').src = png;
-    const a = $('btn-descargar'); a.href = png; a.download = 'boleto-' + b.folio + '.png';
     const el = $('estado-correo'); el.className = 'estado-correo';
     el.innerHTML = repetido
       ? 'Ya redimiste tu cupón desde este celular.<br><b>Descárgalo o tómale captura</b> para tenerlo a la mano.'
-      : '⚠️ <b>Importante:</b> descarga tu cupón o tómale captura de pantalla.<br>No se envía por correo. Válido hasta el ' + C.VIGENCIA + '.';
-    prepararCompartir(png, b.folio);
+      : '⚠️ <b>Importante:</b> guarda tu cupón o tómale captura de pantalla.<br>Válido hasta el ' + C.VIGENCIA + '.';
+    await prepararGuardar(png, b.folio);
     mostrar('s-boleto');
     return png;
   }
 
-  async function prepararCompartir(png, folio){
-    const btn = $('btn-compartir');
+  // Descargar: guarda el PNG como archivo (iPhone: carpeta Descargas en Archivos; Android: Descargas/Galería).
+  // Guardar o compartir: abre el menú del sistema ("Guardar imagen" lo manda a Fotos, o WhatsApp, etc.).
+  async function prepararGuardar(png, folio){
+    const a = $('btn-descargar'), btn = $('btn-compartir');
+    const nombre = 'cupon-' + folio + '.png';
+    a.download = nombre; a.href = png; a.onclick = null;
     try {
       const blob = await (await fetch(png)).blob();
-      const file = new File([blob], 'boleto-' + folio + '.png', {type:'image/png'});
+      a.href = URL.createObjectURL(blob);   // iPhone no descarga imágenes "data:", pero sí "blob:"
+      const file = new File([blob], nombre, {type:'image/png'});
       if (navigator.canShare && navigator.canShare({files:[file]})){
-        btn.classList.remove('oculto');
-        btn.onclick = () => navigator.share({files:[file], title:'Mi cupón 2x1 de cine Eduperks'}).catch(()=>{});
+        const compartir = ev => { if (ev) ev.preventDefault(); navigator.share({files:[file]}).catch(()=>{}); };
+        btn.classList.remove('oculto'); btn.onclick = compartir;
+        // Chrome/Firefox en iPhone no permiten descargar: ahí "Descargar" abre el menú para guardar
+        if (/CriOS|FxiOS|EdgiOS/i.test(navigator.userAgent)) a.onclick = compartir;
       }
     } catch(e){}
   }
